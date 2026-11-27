@@ -804,9 +804,6 @@ namespace JASON_Compiler
             return node;
         }
 
-        // ------------------------------------------------------------------
-        // match (unchanged)
-        // ------------------------------------------------------------------
         public Node match(Token_Class ExpectedToken)
         {
 
