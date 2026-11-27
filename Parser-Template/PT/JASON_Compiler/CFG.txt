@@ -1,0 +1,276 @@
+Rynix Programming Language
+Milestone 2 - Context-Free Grammar (CFG)
+============================================================
+
+Notation
+--------
+::=       is defined as
+|         alternative (OR)
+{ X }     zero or more repetitions of X
+[ X ]     optional (zero or one occurrence)
+epsilon   empty production
+
+============================================================
+SECTION 1 - TERMINALS
+============================================================
+
+1.1 Reserved words
+-----------------
+var
+val
+fun
+class
+if
+else
+while
+for
+in
+return
+true
+false
+null
+new
+print
+input
+break
+continue
+init
+
+1.2 Built-in type keywords
+--------------------------
+Int
+Float
+String
+Bool
+Char
+Array
+Void
+
+1.3 Token categories
+-------------------
+IDENTIFIER
+INTEGER_LITERAL
+FLOAT_LITERAL
+STRING_LITERAL
+CHAR_LITERAL
+
+1.4 Operators
+-------------
+=
+==
+!=
+<
+>
+<=
+>=
++
+-
+*
+/
+%
+..
+
+1.5 Delimiters and punctuation
+------------------------------
+:
+,
+.
+(
+)
+[
+]
+{
+}
+
+============================================================
+SECTION 2 - PRODUCTION RULES
+============================================================
+
+2.1 Program and top-level items
+-------------------------------
+PROGRAM ::= { TOP_LEVEL_ITEM }
+
+TOP_LEVEL_ITEM ::=
+      VARIABLE_DECLARATION
+    | CONSTANT_DECLARATION
+    | FUNCTION_DEFINITION
+    | CLASS_DEFINITION
+    | STATEMENT
+
+
+2.2 Declarations
+----------------
+VARIABLE_DECLARATION ::= var IDENTIFIER : TYPE [ = EXPRESSION ]
+
+CONSTANT_DECLARATION ::= val IDENTIFIER : TYPE = EXPRESSION
+
+
+2.3 Types
+---------
+TYPE ::= BASIC_TYPE | ARRAY_TYPE
+
+BASIC_TYPE ::=
+      Int
+    | Float
+    | String
+    | Bool
+    | Char
+    | Void
+    | IDENTIFIER
+
+ARRAY_TYPE ::= Array < TYPE >
+
+
+2.4 Function definitions and parameters
+---------------------------------------
+FUNCTION_DEFINITION ::= fun IDENTIFIER ( [ PARAMETER_LIST ] ) : TYPE BLOCK
+
+PARAMETER_LIST ::= PARAMETER { , PARAMETER }
+
+PARAMETER ::= IDENTIFIER : TYPE
+
+
+2.5 Class definitions
+---------------------
+CLASS_DEFINITION ::= class IDENTIFIER { { CLASS_MEMBER } }
+
+CLASS_MEMBER ::= PROPERTY_DECLARATION
+               | FUNCTION_DEFINITION
+               | CONSTRUCTOR_DEFINITION
+
+PROPERTY_DECLARATION ::= var IDENTIFIER : TYPE [ = EXPRESSION ]
+
+CONSTRUCTOR_DEFINITION ::= init ( [ PARAMETER_LIST ] ) BLOCK
+
+
+2.6 Blocks and statements
+------------------------
+BLOCK ::= { { STATEMENT } }
+
+STATEMENT ::=
+      VARIABLE_DECLARATION
+    | CONSTANT_DECLARATION
+    | ASSIGNMENT_OR_EXPRESSION_STATEMENT
+    | IF_STATEMENT
+    | WHILE_STATEMENT
+    | FOR_STATEMENT
+    | RETURN_STATEMENT
+    | BREAK_STATEMENT
+    | CONTINUE_STATEMENT
+    | PRINT_STATEMENT
+    | BLOCK
+
+
+2.7 Assignment or expression statements
+--------------------------------------
+ASSIGNMENT_OR_EXPRESSION_STATEMENT ::= EXPRESSION [ = EXPRESSION ]
+
+The parser first parses the left-side expression. If the next token is "=",
+it parses the right-side expression as an assignment. Otherwise, the parsed
+expression is an expression statement.
+
+A semantic/parser validation step must ensure that an assignment's left side
+is assignable (an identifier, member access, or array access), rather than
+an arbitrary expression such as a literal or arithmetic expression.
+
+
+2.8 Control-flow statements
+---------------------------
+IF_STATEMENT ::= if EXPRESSION BLOCK [ else BLOCK ]
+
+WHILE_STATEMENT ::= while EXPRESSION BLOCK
+
+FOR_STATEMENT ::= for IDENTIFIER in EXPRESSION BLOCK
+
+
+2.9 Return, break, continue, and print
+--------------------------------------
+RETURN_STATEMENT ::= return [ EXPRESSION ]
+
+BREAK_STATEMENT ::= break
+
+CONTINUE_STATEMENT ::= continue
+
+PRINT_STATEMENT ::= print ( EXPRESSION )
+
+
+2.10 Expressions
+----------------
+EXPRESSION ::= COMPARISON_EXPRESSION
+
+COMPARISON_EXPRESSION ::= RANGE_EXPRESSION [ COMPARISON_OPERATOR RANGE_EXPRESSION ]
+
+COMPARISON_OPERATOR ::=
+      ==
+    | !=
+    | <
+    | >
+    | <=
+    | >=
+
+RANGE_EXPRESSION ::= ARITHMETIC_EXPRESSION [ .. ARITHMETIC_EXPRESSION ]
+
+ARITHMETIC_EXPRESSION ::= ADDITIVE_EXPRESSION
+
+ADDITIVE_EXPRESSION ::= MULTIPLICATIVE_EXPRESSION
+                        { ( + | - ) MULTIPLICATIVE_EXPRESSION }
+
+MULTIPLICATIVE_EXPRESSION ::= UNARY_EXPRESSION
+                              { ( * | / | % ) UNARY_EXPRESSION }
+
+UNARY_EXPRESSION ::= ( + | - ) UNARY_EXPRESSION
+                   | POSTFIX_EXPRESSION
+
+POSTFIX_EXPRESSION ::= PRIMARY_EXPRESSION { POSTFIX_SUFFIX }
+
+POSTFIX_SUFFIX ::= ARGUMENTS_SUFFIX
+                  | MEMBER_SUFFIX
+                  | ARRAY_SUFFIX
+
+ARGUMENTS_SUFFIX ::= ( [ ARGUMENT_LIST ] )
+
+MEMBER_SUFFIX ::= . IDENTIFIER
+
+ARRAY_SUFFIX ::= [ EXPRESSION ]
+
+
+2.11 Primary expressions
+-----------------------
+PRIMARY_EXPRESSION ::=
+      LITERAL
+    | IDENTIFIER
+    | ( EXPRESSION )
+    | ARRAY_LITERAL
+    | NEW_OBJECT
+    | INPUT_CALL
+
+
+2.12 Literals
+-------------
+LITERAL ::= INTEGER_LITERAL
+          | FLOAT_LITERAL
+          | STRING_LITERAL
+          | CHAR_LITERAL
+          | true
+          | false
+          | null
+
+
+2.13 Array literals
+-------------------
+ARRAY_LITERAL ::= [ [ EXPRESSION { , EXPRESSION } ] ]
+
+
+2.14 Object creation
+-------------------
+NEW_OBJECT ::= new IDENTIFIER ( [ ARGUMENT_LIST ] )
+
+
+2.15 Argument lists
+-------------------
+ARGUMENT_LIST ::= EXPRESSION { , EXPRESSION }
+
+
+2.16 Input
+----------
+INPUT_CALL ::= input ( )
